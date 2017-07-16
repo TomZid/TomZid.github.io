@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<body>
+<h1>Team git branch model</h1>
+<p>目标
+使用标准的GitFlow，规范branch的命名，规范代码开发及发布流程管理。
+流程
+场景1：我收到一个任务，并且需要在指定时间内完成。
+当接到story或者bug，在JIRA系统中创建ticket（一般由需求方提供）。例如：VLS-123
+从develop branch创建feature branch，例如：feature/VLS-123
+当任务完成，push feature/VLS-123去remote git repo
+在提交pull request给相关人员进行review，例如：feature/VLS-123 =》 develop
+当代码被review过后，pull request被接受，并被merge去develop
+用jenkins去编译部署develop branch去UAT环境
+JIRA 上的VLS-123状态设置为完成，QA人员可以进行测试
+如若发现问题继续在feature/VLS-123修改，循环#3~#6
+场景2：当我要release代码去prod
+当到了release的时间点时，需要创建release branch从develop branch，例如 release/1.0。
+在release branch创建以后，如果有代码checkin去develop branch，将不会被release。
+部署release/1.0 branch去QA环境，进行测试。
+QA环境通过后，部署release/1.0 branch去Prod环境。
+Merge release branch 去master branch，并打tag。例如：tag1.0.
+场景3：如果在release分支生成后，有代码需要同此次release一起部署
+在JIRA系统上创建bug。例如：VLS-345
+从release branch签出hotfix branch。例如hotfix/VLS-345/release/1.0
+当任务完成，push hotfix branch去remote。
+提交pull request 到release branch给相关人员进行review，例如：hotfix/VLS-345/release/1.0 =》 release/1.0
+当代码被review过后，pull request被接受，会被merge去release branch。
+将release branch代码部署去QA环境，由QA人员进行测试。
+QA环境测试没问题，部署release branch去Prod。如有问题，继续hotfix branch上修改，重复#3~#6
+对Prod环境进行测试。
+Merge release branch 去develop branch。
+Merge release branch 去master branch，并打tag。例如：tag1.0.1.
+场景4：如果我在提交pull request的时候，发现有冲突，如何处理
+当你要提交一个feature branch去develop的时候，可能因为其他相同改动的代码部分被提交到develop去，引起了冲突。
+需要将develop pull到local。
+然后切换到feature branch，并merge develop branch到feature branch。
+此时会有冲突出现。在本机将冲突解决，并提交。
+push feature branch 去remote。
+再次提交pull request。
+分支命名
+master
+develop
+feature/VLS-123
+release/1.0
+hotfix/VLS-345/release/1.0
+注意要点
+一般来说，已被merge到develop branch的代码，质量会有一定的保证（至少开发自己在本机要测试过，而且是被review过的代码），并且被部署到UAT环境。QA测试人员和产品经理会在此环境进行功能测试和验收。
+请勿直接将代码checkin去本地的develop分支，而后直接push develop branch。此种行为不被允许，可由GIT Admin进行分支权限设置。
+代码checkin的comment需要写上JIRA ticket的ID，例如VLS-123。这将会把JIRA和Bitbucket连接起来。https://blog.bitbucket.org/2012/04/30/linking-bitbucket-and-jira/
+
+参考
+http://nvie.com/posts/a-successful-git-branching-model/
+http://www.oschina.net/translate/a-successful-git-branching-model 中文版
+</p>
+</body>
+</html>
